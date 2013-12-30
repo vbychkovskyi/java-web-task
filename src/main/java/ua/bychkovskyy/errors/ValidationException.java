@@ -1,6 +1,6 @@
 package ua.bychkovskyy.errors;
 
-public class ValidationException extends Exception{
+public class ValidationException extends Exception {
 
     private String message;
 

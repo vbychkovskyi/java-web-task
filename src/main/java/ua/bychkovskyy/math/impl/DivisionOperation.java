@@ -8,8 +8,11 @@ public class DivisionOperation implements Operation {
     private final Logger logger = Logger.getLogger(getClass());
 
     @Override
-    public double doOperation(long a, long b) {
+    public double doOperation(double a, double b) {
         logger.info(String.format("Division operands '%s' and '%s'", a, b));
-        return ((double) a) / ((double) b);
+        if (b == 0) {
+            throw new ArithmeticException();
+        }
+        return a / b;
     }
 }

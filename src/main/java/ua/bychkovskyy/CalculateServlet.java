@@ -1,5 +1,6 @@
 package ua.bychkovskyy;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.log4j.Logger;
 import ua.bychkovskyy.errors.OperationNotFoundException;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Reader;
 
 public class CalculateServlet extends HttpServlet {
 
@@ -20,13 +22,15 @@ public class CalculateServlet extends HttpServlet {
     private final Logger logger = Logger.getLogger(getClass());
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             double result;
-            Long operand1 = validateAndParseOperand(req.getParameter("operand1"), Message.INCORRECT_FIRST_OPERAND);
-            Long operand2 = validateAndParseOperand(req.getParameter("operand2"), Message.INCORRECT_SECOND_OPERAND);
+            JsonObject requestParams = parseParamsFromBody(req.getReader());
 
-            String op = req.getParameter("operation");
+            double operand1 = validateAndParseOperand(requestParams.get("operand1").getAsString(), Message.INCORRECT_FIRST_OPERAND);
+            double operand2 = validateAndParseOperand(requestParams.get("operand2").getAsString(), Message.INCORRECT_SECOND_OPERAND);
+
+            String op = requestParams.get("operation").getAsString();
             Operation operation = operationFactory.getOperation(op);
 
             result = operation.doOperation(operand1, operand2);
@@ -47,9 +51,14 @@ public class CalculateServlet extends HttpServlet {
         }
     }
 
-    private Long validateAndParseOperand(String operand, String violationMessage) throws ValidationException {
+    private JsonObject parseParamsFromBody(Reader reader) throws IOException {
+        Gson gson = new Gson();
+        return gson.fromJson(reader, JsonObject.class);
+    }
+
+    private double validateAndParseOperand(String operand, String violationMessage) throws ValidationException {
         try {
-            return Long.parseLong(operand);
+            return Double.parseDouble(operand);
         } catch (NumberFormatException nfe) {
             throw new ValidationException(violationMessage, nfe);
         }

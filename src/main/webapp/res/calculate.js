@@ -7,18 +7,23 @@ function calculate() {
     var params = '?operand1=' + value1 + '&operand2=' + value2 + '&operation=' + operation;
     var url = '/calculate' + params;
 
+    var requestBody = {
+        operand1 : value1,
+        operand2 : value2,
+        operation: operation
+    };
+
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    xhr.open('POST', url, true);
     xhr.onreadystatechange = function(){
         var resp = xhr.responseText;
-        showResult(resp);
+        showResult(JSON.parse(resp));
     };
-    xhr.send();
+    xhr.send(JSON.stringify(requestBody));
 
 }
 
 function showResult(resp){
-    resp = JSON.parse(resp);
     var resultContainer = document.getElementById("result");
     var messageContainer = document.getElementById("message");
 
