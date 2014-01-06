@@ -4,8 +4,7 @@ function calculate() {
     var value2 = document.getElementById('op2').value;
     var operation = document.getElementById('op').value;
 
-    var params = '?operand1=' + value1 + '&operand2=' + value2 + '&operation=' + operation;
-    var url = '/calculate' + params;
+    var url = '/calculate';
 
     var requestBody = {
         operand1 : value1,
